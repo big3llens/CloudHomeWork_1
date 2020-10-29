@@ -1,8 +1,5 @@
 import javax.security.sasl.SaslException;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -41,7 +38,19 @@ public class ClientHandler implements Runnable {
                     }
                 }
                 if (command.equals("download")) {
-                    // TODO: 27.10.2020
+                    try {
+                        File file = new File("server/" + in.readUTF());
+                        out.writeLong(file.length());
+                        FileInputStream fis = new FileInputStream(file);
+                        int read = 0;
+                        while ((read = fis.read()) != -1) {
+                            out.write(read);
+                        }
+                        out.flush();
+                        out.writeUTF("Ok");
+                    } catch (Exception e) {
+                        out.writeUTF("WRONG");
+                    }
                 }
                 if (command.equals("exit")) {
                     System.out.println("Client disconnected correctly");

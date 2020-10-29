@@ -15,7 +15,6 @@ public class Client extends JFrame {
     private final Socket socket;
     private final DataInputStream in;
     private final DataOutputStream out;
-
     public Client() throws HeadlessException, IOException {
         socket = new Socket("localhost", 8189);
         out = new DataOutputStream(socket.getOutputStream());
@@ -49,7 +48,23 @@ public class Client extends JFrame {
     }
 
     private void getFile(String fileName) {
-        // TODO: 27.10.2020
+        try {
+            out.writeUTF("download");
+            out.writeUTF(fileName);
+            File file = new File("client/" + fileName);
+            if (!file.exists()) {file.createNewFile();}
+            long size = in.readLong();
+            FileOutputStream fos = new FileOutputStream(file);
+            for (int i = 0; i < size; i++){
+                fos.write(in.read());
+            }
+            fos.close();
+            String status = in.readUTF();
+            System.out.println(status);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendFile(String filename) {
